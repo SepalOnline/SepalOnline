@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SEPAL – Danh sách Sinh viên</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bd:#1a3a6e; --blue:#2c5282;
+  --red:#dc2626; --red-bg:#fef2f2;
+  --orange:#ea580c; --orange-bg:#fff7ed;
+  --yellow:#ca8a04; --yellow-bg:#fefce8;
+  --green:#16a34a; --green-bg:#f0fdf4;
+  --bg:#f0f4f8; --white:#fff;
+  --g50:#f8fafc; --g100:#f1f5f9; --g200:#e2e8f0;
+  --g400:#94a3b8; --g500:#64748b; --g600:#475569; --g700:#374151; --g900:#0f172a;
+  --text:#1e293b;
+  --sh1:0 2px 10px rgba(0,0,0,.07);
+  --sh2:0 4px 16px rgba(0,0,0,.1);
+  --sh3:0 8px 28px rgba(0,0,0,.15);
+  --r:12px; --r2:8px;
+}
+body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* PAGE SWITCH */
+.sp{display:none;}
+.sp.on{display:block;}
+
+/* FULL WIDTH */
+.fw{width:100vw;position:relative;left:50%;right:50%;margin-left:-50vw;margin-right:-50vw;background:var(--bg);min-height:100vh;}
+.fw-body{max-width:1300px;margin:0 auto;padding:28px 20px;box-sizing:border-box;}
+.fw-body-md{max-width:1100px;margin:0 auto;padding:28px 20px;box-sizing:border-box;}
+
+/* HEADER */
+.hdr{background:linear-gradient(135deg,var(--bd),var(--blue));border-radius:var(--r);padding:20px 28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;margin-bottom:24px;box-shadow:0 8px 24px rgba(26,58,110,.25);}
+.hdr-l{display:flex;align-items:center;gap:16px;}
+.hdr-logo{width:48px;height:48px;background:rgba(255,255,255,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;}
+.hdr-t{font-size:20px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.5px;}
+.hdr-s{font-size:13px;color:rgba(255,255,255,.7);margin-top:2px;}
+.hdr-r{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.btn-rf{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:9px 18px;border-radius:var(--r2);font-family:'Be Vietnam Pro',sans-serif;font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:background .2s;}
+.btn-rf:hover{background:rgba(255,255,255,.28);}
+.hdr-upd{font-size:13px;color:rgba(255,255,255,.65);}
+
+/* STAT GRID */
+.sg{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:24px;}
+.sc{background:#fff;border-radius:var(--r);padding:18px 20px;display:flex;align-items:center;gap:14px;box-shadow:var(--sh1);position:relative;overflow:hidden;border-top:4px solid transparent;transition:transform .18s,box-shadow .18s;}
+.sc:hover{transform:translateY(-2px);box-shadow:var(--sh2);}
+.sc.c-b{border-top-color:var(--blue);} .sc.c-r{border-top-color:var(--red);} .sc.c-o{border-top-color:var(--orange);} .sc.c-y{border-top-color:var(--yellow);} .sc.c-g{border-top-color:var(--green);}
+.sc-ico{font-size:22px;flex-shrink:0;}
+.sc.c-b .sc-ico{color:var(--blue);} .sc.c-r .sc-ico{color:var(--red);} .sc.c-o .sc-ico{color:var(--orange);} .sc.c-y .sc-ico{color:var(--yellow);} .sc.c-g .sc-ico{color:var(--green);}
+.sc-n{font-size:28px;font-weight:800;color:var(--g900);line-height:1;}
+.sc-l{font-size:12px;color:var(--g500);margin-top:4px;font-weight:500;}
+.sc-dot{position:absolute;right:14px;top:50%;transform:translateY(-50%);width:10px;height:10px;border-radius:50%;}
+
+/* CHART GRID */
+.cg{display:grid;grid-template-columns:320px 1fr;gap:16px;margin-bottom:24px;}
+.cc{background:#fff;border-radius:var(--r);box-shadow:var(--sh1);overflow:hidden;}
+.cc-hdr{background:var(--g50);padding:14px 20px;font-size:13px;font-weight:700;color:var(--g700);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--g200);display:flex;align-items:center;gap:10px;}
+.cc-body{padding:20px;}
+
+/* TABLE CARD */
+.tc{background:#fff;border-radius:var(--r);box-shadow:var(--sh1);overflow:hidden;margin-bottom:16px;}
+.ch{background:var(--g50);padding:14px 20px;font-size:13px;font-weight:700;color:var(--g700);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--g200);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.cht{display:flex;align-items:center;gap:8px;}
+.sb{display:flex;align-items:center;gap:8px;background:var(--g100);border:1px solid var(--g200);border-radius:var(--r2);padding:8px 14px;}
+.sb input{border:none;background:transparent;outline:none;font-family:'Be Vietnam Pro',sans-serif;font-size:14px;width:230px;color:var(--text);}
+.sb input::placeholder{color:var(--g400);}
+.sb i{color:var(--g400);font-size:13px;}
+.fb{padding:10px 20px;border-bottom:1px solid var(--g200);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.fbtn{padding:5px 14px;border-radius:99px;border:2px solid var(--g200);background:#fff;color:var(--g600);font-family:'Be Vietnam Pro',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:5px;}
+.fbtn:hover{border-color:var(--blue);color:var(--blue);}
+.fbtn.fa-all{border-color:var(--blue);background:var(--blue);color:#fff;}
+.fbtn.fa-red{border-color:var(--red);background:var(--red);color:#fff;}
+.fbtn.fa-orange{border-color:var(--orange);background:var(--orange);color:#fff;}
+.fbtn.fa-yellow{border-color:var(--yellow);background:var(--yellow);color:#fff;}
+.fbtn.fa-green{border-color:var(--green);background:var(--green);color:#fff;}
+.fdot{width:7px;height:7px;border-radius:50%;}
+.svt{width:100%;border-collapse:collapse;text-align:center;font-size:14px;}
+.svt th{background:var(--g50);padding:12px 14px;font-weight:700;font-size:11px;color:var(--g600);border-bottom:2px solid var(--g200);text-transform:uppercase;white-space:nowrap;letter-spacing:.4px;}
+.svt td{padding:12px 14px;border-bottom:1px solid var(--g100);color:var(--g700);}
+.svt tbody tr:last-child td{border-bottom:none;}
+.th-p{background:#fefce8!important;color:var(--yellow)!important;}
+.td-p{background:#fef9c3;font-weight:800;font-size:15px;color:var(--g900);}
+.svr{cursor:pointer;transition:background .12s;}
+.svr:hover td{background:#eff6ff!important;}
+.svr .cl-id,.svr .cl-nm{color:var(--bd);font-weight:700;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;}
+.svr:hover .cl-id,.svr:hover .cl-nm{text-decoration-style:solid;}
+.gpc{font-weight:600;}
+.d-up{font-size:10px;color:var(--green);margin-left:3px;}
+.d-dn{font-size:10px;color:var(--red);margin-left:3px;}
+.bdg{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;font-size:11px;font-weight:700;white-space:nowrap;}
+.bdot2{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.b-r{background:var(--red-bg);color:var(--red);} .b-r .bdot2{background:var(--red);}
+.b-o{background:var(--orange-bg);color:var(--orange);} .b-o .bdot2{background:var(--orange);}
+.b-y{background:var(--yellow-bg);color:var(--yellow);} .b-y .bdot2{background:var(--yellow);}
+.b-g{background:var(--green-bg);color:var(--green);} .b-g .bdot2{background:var(--green);}
+.tf{padding:12px 20px;font-size:13px;color:var(--g500);background:var(--g50);border-top:1px solid var(--g200);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.th{color:var(--g400);font-size:12px;display:flex;align-items:center;gap:5px;}
+.stb{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:60px 20px;font-size:15px;color:var(--g500);}
+.nd{text-align:center;padding:40px 20px;color:var(--g400);}
+.nd i{font-size:32px;margin-bottom:10px;display:block;}
+
+/* ==== DETAIL PAGE ==== */
+.tpb{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px;}
+.btn-bk{background:var(--bd);color:#fff;border:none;padding:10px 18px;border-radius:var(--r2);font-family:'Be Vietnam Pro',sans-serif;font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:background .2s;}
+.btn-bk:hover{background:var(--blue);}
+.brc{font-size:13px;color:var(--g500);}
+.brc strong{color:var(--text);}
+.hero{border-radius:14px;padding:22px 28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;margin-bottom:22px;color:#fff;box-shadow:var(--sh3);}
+.hero.t-r{background:linear-gradient(135deg,#dc2626,#b91c1c);}
+.hero.t-o{background:linear-gradient(135deg,#ea580c,#c2410c);}
+.hero.t-y{background:linear-gradient(135deg,#ca8a04,#a16207);}
+.hero.t-g{background:linear-gradient(135deg,#16a34a,#15803d);}
+.hero-l{display:flex;align-items:center;gap:18px;}
+.hero-av{width:60px;height:60px;background:rgba(255,255,255,.2);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;}
+.hero-nm{font-size:22px;font-weight:800;}
+.hero-mt{font-size:13px;opacity:.8;margin-top:5px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.hero-sp{opacity:.4;}
+.hero-bd{font-size:13px;font-weight:700;background:rgba(255,255,255,.2);padding:10px 22px;border-radius:10px;text-transform:uppercase;letter-spacing:.5px;text-align:center;}
+
+/* Input card */
+.icard{background:#fff;border-radius:var(--r);box-shadow:var(--sh1);overflow:hidden;margin-bottom:18px;}
+.icard-hdr{background:linear-gradient(135deg,var(--bd),var(--blue));color:#fff;padding:14px 22px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;gap:10px;}
+.icard-body{padding:22px;}
+.sem-blk{margin-bottom:20px;}
+.sem-blk:last-child{margin-bottom:0;}
+.sem-ttl{background:var(--g50);border:1px solid var(--g200);border-radius:var(--r2) var(--r2) 0 0;padding:12px 18px;font-size:15px;font-weight:700;color:var(--g900);display:flex;justify-content:space-between;align-items:center;}
+.sem-tw{border:1px solid var(--g200);border-top:none;border-radius:0 0 var(--r2) var(--r2);overflow:hidden;}
+.semt{width:100%;border-collapse:collapse;text-align:center;font-size:14px;}
+.semt th{background:#fff;padding:11px 14px;font-weight:600;font-size:12px;color:var(--g600);border-bottom:2px solid var(--g200);}
+.semt td{padding:10px 14px;border-bottom:1px solid var(--g100);color:var(--g700);}
+.td-nm{text-align:left!important;font-weight:600;color:var(--g900);}
+.td-gv{font-weight:700;font-size:15px;}
+.gf{color:var(--red);background:var(--red-bg);border-radius:5px;padding:2px 8px;}
+.sem-ft{background:var(--g50);border:1px solid var(--g200);border-top:none;padding:11px 18px;display:flex;justify-content:space-between;align-items:center;}
+.sem-sv{font-size:14px;color:var(--g600);font-weight:600;}
+.sem-sv span{color:var(--bd);font-weight:800;}
+
+/* Result grid */
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.rc{background:#fff;border-radius:var(--r);box-shadow:var(--sh1);overflow:hidden;}
+.rc-hdr{background:var(--g50);padding:14px 22px;font-size:13px;font-weight:700;color:var(--g700);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--g200);display:flex;align-items:center;gap:10px;}
+.rc-body{padding:22px;}
+.rr{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--g100);}
+.rl{font-size:14px;color:var(--g500);font-weight:500;}
+.rv{font-size:18px;font-weight:800;color:var(--g900);}
+
+/* Trend bars */
+.tw{display:flex;align-items:flex-end;gap:8px;margin-top:14px;}
+.ti{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;}
+.tbw{width:100%;height:100px;background:var(--g100);border-radius:6px;overflow:hidden;display:flex;align-items:flex-end;}
+.tb2{width:100%;border-radius:6px;transition:height .65s ease;background:var(--blue);}
+.tb-dash{background:repeating-linear-gradient(45deg,var(--g400),var(--g400) 4px,var(--g300) 4px,var(--g300) 9px);}
+.tl2{font-size:11px;color:var(--g500);font-weight:600;text-align:center;line-height:1.3;}
+.tv2{font-size:13px;font-weight:800;color:var(--g900);}
+.tarr{font-size:12px;color:var(--g300);padding-bottom:52px;flex-shrink:0;}
+.sec-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--g400);margin-bottom:10px;margin-top:18px;}
+
+/* GPA box */
+.gpb{border-radius:var(--r);padding:24px;text-align:center;color:#fff;margin-bottom:14px;}
+.gpb.t-r{background:linear-gradient(135deg,#dc2626,#b91c1c);}
+.gpb.t-o{background:linear-gradient(135deg,#ea580c,#c2410c);}
+.gpb.t-y{background:linear-gradient(135deg,#ca8a04,#a16207);}
+.gpb.t-g{background:linear-gradient(135deg,#16a34a,#15803d);}
+.gpb-l{font-size:12px;font-weight:700;text-transform:uppercase;opacity:.9;margin-bottom:4px;}
+.gpb-n{font-size:60px;font-weight:900;line-height:1;margin:6px 0;}
+.gpb-w{font-size:13px;font-weight:700;text-transform:uppercase;margin-top:4px;}
+.gpb-pw{margin-top:14px;background:rgba(255,255,255,.25);border-radius:99px;height:8px;overflow:hidden;}
+.gpb-p{height:100%;border-radius:99px;background:#fff;transition:width .8s ease;}
+.gpb-ll{display:flex;justify-content:space-between;font-size:11px;opacity:.75;margin-top:5px;}
+
+/* Recs */
+.rl2{list-style:none;padding:0;margin:0;}
+.rl2 li{display:flex;align-items:flex-start;gap:10px;font-size:14px;padding:10px 14px;border-radius:var(--r2);margin-bottom:8px;line-height:1.5;font-weight:500;border-left:3px solid transparent;}
+.rl2 li .ri{font-size:14px;flex-shrink:0;margin-top:1px;}
+.rl2.lr li{border-left-color:var(--red);background:var(--red-bg);} .rl2.lr .ri{color:var(--red);}
+.rl2.lo li{border-left-color:var(--orange);background:var(--orange-bg);} .rl2.lo .ri{color:var(--orange);}
+.rl2.ly li{border-left-color:var(--yellow);background:var(--yellow-bg);} .rl2.ly .ri{color:var(--yellow);}
+.rl2.lg li{border-left-color:var(--green);background:var(--green-bg);} .rl2.lg .ri{color:var(--green);}
+
+@keyframes fiu{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+.ai{animation:fiu .3s ease both;}
+
+@media(max-width:1100px){.sg{grid-template-columns:repeat(3,1fr);}.rg{grid-template-columns:1fr;}}
+@media(max-width:900px){.cg{grid-template-columns:1fr;}}
+@media(max-width:720px){.sg{grid-template-columns:1fr 1fr;}.svt .hs{display:none;}.hero-nm{font-size:18px;}.gpb-n{font-size:46px;}}
+</style>
+</head>
+<body>
+
+<div id="pg-list" class="sp on">
+  <div class="fw">
+    <div class="fw-body">
+
+      <div class="hdr">
+        <div class="hdr-l">
+          <div class="hdr-logo"><i class="fa-solid fa-graduation-cap"></i></div>
+          <div>
+            <div class="hdr-t">SEPAL – Danh sách Sinh viên</div>
+            <div class="hdr-s">Xem &amp; tra cứu kết quả học tập từ Google Sheets</div>
+          </div>
+        </div>
+        <div class="hdr-r">
+          <button class="btn-rf" onclick="loadData()">
+            <i class="fa-solid fa-rotate-right" id="ri"></i> Làm mới
+          </button>
+          <div class="hdr-upd">Cập nhật: <span id="upd-time">--</span></div>
+        </div>
+      </div>
+
+      <div id="st-load" class="tc stb">
+        <i class="fa-solid fa-spinner fa-spin" style="font-size:32px;color:var(--blue);"></i>
+        <span>Đang tải dữ liệu từ Google Sheets...</span>
+      </div>
+
+      <div id="st-err" class="tc stb" style="display:none;">
+        <i class="fa-solid fa-triangle-exclamation" style="font-size:32px;color:var(--orange);"></i>
+        <span style="font-weight:700;color:var(--g700);">Không kết nối được – Hiển thị dữ liệu mẫu</span>
+        <button class="btn-rf" onclick="loadData()" style="background:var(--bd);">Thử lại</button>
+      </div>
+
+      <div id="main-ct" style="display:none;">
+        <div class="sg ai">
+          <div class="sc c-b">
+            <div class="sc-ico"><i class="fa-solid fa-users"></i></div>
+            <div><div class="sc-n" id="ct-tot">0</div><div class="sc-l">Tổng sinh viên</div></div>
+          </div>
+          <div class="sc c-r">
+            <div class="sc-ico"><i class="fa-solid fa-circle-exclamation"></i></div>
+            <div><div class="sc-n" id="ct-r">0</div><div class="sc-l">Nguy cơ rất cao</div></div>
+            <div class="sc-dot" style="background:var(--red);"></div>
+          </div>
+          <div class="sc c-o">
+            <div class="sc-ico"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <div><div class="sc-n" id="ct-o">0</div><div class="sc-l">Nguy cơ cao</div></div>
+            <div class="sc-dot" style="background:var(--orange);"></div>
+          </div>
+          <div class="sc c-y">
+            <div class="sc-ico"><i class="fa-solid fa-eye"></i></div>
+            <div><div class="sc-n" id="ct-y">0</div><div class="sc-l">Cần theo dõi</div></div>
+            <div class="sc-dot" style="background:var(--yellow);"></div>
+          </div>
+          <div class="sc c-g">
+            <div class="sc-ico"><i class="fa-solid fa-circle-check"></i></div>
+            <div><div class="sc-n" id="ct-g">0</div><div class="sc-l">Ổn định</div></div>
+            <div class="sc-dot" style="background:var(--green);"></div>
+          </div>
+        </div>
+
+        <div class="cg ai">
+          <div class="cc">
+            <div class="cc-hdr">
+              <i class="fa-solid fa-chart-pie" style="color:var(--blue);"></i> Phân bố Cảnh báo
+            </div>
+            <div class="cc-body" style="display:flex; flex-direction:column; align-items:center; gap:20px;">
+              <div style="position:relative; width:200px; height:200px;">
+                <canvas id="chart-donut"></canvas>
+              </div>
+              <div id="donut-legend" style="width:100%; display:flex; flex-direction:column; gap:8px;"></div>
+            </div>
+          </div>
+          <div class="cc">
+            <div class="cc-hdr">
+              <i class="fa-solid fa-chart-bar" style="color:var(--blue);"></i> So sánh Năng lực Sinh viên theo từng học kỳ
+            </div>
+            <div class="cc-body" style="height:280px; position:relative; padding-bottom: 30px;">
+              <canvas id="chart-bar"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="tc ai">
+          <div class="ch">
+            <div class="cht"><i class="fa-solid fa-table-list" style="color:var(--blue);"></i> Danh sách Sinh viên &amp; Dự báo</div>
+            <div class="sb">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" placeholder="Tìm mã SV hoặc họ tên..." oninput="doSearch(this.value)">
+            </div>
+          </div>
+          <div class="fb">
+            <button class="fbtn fa-all" data-f="all" onclick="setF('all',this)"><i class="fa-solid fa-list"></i> Tất cả</button>
+            <button class="fbtn" data-f="red" onclick="setF('red',this)"><span class="fdot" style="background:var(--red);"></span> Đỏ</button>
+            <button class="fbtn" data-f="orange" onclick="setF('orange',this)"><span class="fdot" style="background:var(--orange);"></span> Cam</button>
+            <button class="fbtn" data-f="yellow" onclick="setF('yellow',this)"><span class="fdot" style="background:var(--yellow);"></span> Vàng</button>
+            <button class="fbtn" data-f="green" onclick="setF('green',this)"><span class="fdot" style="background:var(--green);"></span> Xanh</button>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="svt">
+              <thead><tr>
+                <th style="width:50px;">STT</th>
+                <th style="min-width:100px;">Mã SV</th>
+                <th style="text-align:left;min-width:180px;">Họ và Tên</th>
+                <th class="hs">GPA Kỳ 1</th>
+                <th class="hs">GPA Kỳ 2</th>
+                <th class="hs">GPA Kỳ 3</th>
+                <th class="th-p">GPA Dự báo Kỳ 4</th>
+                <th>Tình trạng</th>
+                <th style="width:50px;"></th>
+              </tr></thead>
+              <tbody id="sv-tb"></tbody>
+            </table>
+          </div>
+          <div class="tf">
+            <span>Hiển thị <strong id="sw">0</strong> / <strong id="tr2">0</strong> sinh viên</span>
+            <span class="th"><i class="fa-solid fa-hand-pointer"></i> Click Mã SV hoặc Tên để xem chi tiết</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<div id="pg-det" class="sp">
+  <div class="fw">
+    <div class="fw-body-md">
+
+      <div class="tpb">
+        <button class="btn-bk" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Quay lại danh sách</button>
+        <span class="brc">Danh sách Sinh viên &rsaquo; <strong id="d-bc">Chi tiết</strong></span>
+      </div>
+
+      <div id="d-hero" class="hero t-g ai">
+        <div class="hero-l">
+          <div class="hero-av"><i class="fa-solid fa-user-graduate"></i></div>
+          <div>
+            <div class="hero-nm" id="d-name">—</div>
+            <div class="hero-mt">
+              <span id="d-id">—</span>
+              <span class="hero-sp">•</span>
+              <span id="d-ts">—</span>
+            </div>
+          </div>
+        </div>
+        <div class="hero-bd" id="d-badge">Ổn định</div>
+      </div>
+
+      <div class="icard ai">
+        <div class="icard-hdr">
+          <i class="fa-solid fa-pen-to-square"></i>
+          DỮ LIỆU ĐẦU VÀO – MÔN HỌC CÁC HỌC KỲ
+        </div>
+        <div class="icard-body">
+          <div id="d-sems"></div>
+        </div>
+      </div>
+
+      <div class="rg">
+        <div class="rc ai">
+          <div class="rc-hdr"><i class="fa-solid fa-chart-line" style="color:var(--blue);"></i> Thông tin Tổng hợp</div>
+          <div class="rc-body">
+            <div class="rr"><span class="rl">GPA Tích lũy (tạm tính)</span><span class="rv" id="d-accum">—</span></div>
+            <div class="rr"><span class="rl">Tổng số Tín chỉ đã nhập</span><span class="rv" id="d-tc">—</span></div>
+            <div class="rr"><span class="rl">GPA Kỳ 3 (gần nhất)</span><span class="rv" id="d-g3v">—</span></div>
+            <div class="rr"><span class="rl">Số môn điểm F</span><span class="rv" id="d-fc">—</span></div>
+            <div class="sec-lbl">Xu hướng GPA qua các kỳ</div>
+            <div class="tw">
+              <div class="ti">
+                <div class="tbw"><div class="tb2" id="b1" style="height:0%;"></div></div>
+                <div class="tl2">Kỳ 1</div><div class="tv2" id="tv1">—</div>
+              </div>
+              <div class="tarr"><i class="fa-solid fa-arrow-right" id="arr12"></i></div>
+              <div class="ti">
+                <div class="tbw"><div class="tb2" id="b2" style="height:0%;"></div></div>
+                <div class="tl2">Kỳ 2</div><div class="tv2" id="tv2">—</div>
+              </div>
+              <div class="tarr"><i class="fa-solid fa-arrow-right" id="arr23"></i></div>
+              <div class="ti">
+                <div class="tbw"><div class="tb2" id="b3" style="height:0%;"></div></div>
+                <div class="tl2">Kỳ 3</div><div class="tv2" id="tv3">—</div>
+              </div>
+              <div class="tarr" style="opacity:.25;"><i class="fa-solid fa-arrow-right"></i></div>
+              <div class="ti">
+                <div class="tbw"><div class="tb2 tb-dash" id="b4" style="height:0%;"></div></div>
+                <div class="tl2">Kỳ 4<br>(dự báo)</div><div class="tv2" id="tv4">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rc ai">
+          <div class="rc-hdr"><i class="fa-solid fa-chart-bar" style="color:var(--blue);"></i> Kết quả Dự báo &amp; Khuyến nghị</div>
+          <div class="rc-body">
+            <div class="gpb t-g" id="d-gpb">
+              <div class="gpb-l">GPA Dự Báo Kỳ 4</div>
+              <div class="gpb-n" id="d-pn">—</div>
+              <div class="gpb-w" id="d-pw">—</div>
+              <div class="gpb-pw"><div class="gpb-p" id="d-pp" style="width:0%;"></div></div>
+              <div class="gpb-ll"><span>0.0</span><span>1.0</span><span>2.0</span><span>3.0</span><span>4.0</span></div>
+            </div>
+            <div class="sec-lbl" style="margin-top:14px;">Khuyến nghị</div>
+            <ul class="rl2 lg" id="d-recs"></ul>
+          </div>
+        </div>
+
+      </div></div>
+  </div>
+</div><script>
+(function(){
+"use strict";
+
+// LINK GOOGLE SHEETS
+var SHEET_URL = "https://script.google.com/macros/s/AKfycbwU1njSLVUk4QasSEkd62Xrn8CXXDOaSNQJbe4uyEqLik7W72bNRaxFOD09vm2CAXfc7w/exec";
+
+var SAMPLE=[
+  {name:"TRẦN BÌNH MINH",student_id:"SV001",timestamp:"20/04/2025 09:12:30",gpa1:"2.80",gpa2:"2.90",gpa3:"2.70",predicted:"2.50",warning:"MỨC CẢNH BÁO: ĐỎ",totalTC:"42",gpaAccum:"2.80",fCount:"2",sem1:"Toán cao cấp(4TC-2.5đ) | Vật lý(3TC-3.0đ) | Lập trình C(3TC-0.0đ)",sem2:"Cơ sở dữ liệu(3TC-2.8đ) | Giải tích(3TC-2.5đ) | CTDL&GT(3TC-0.0đ)",sem3:"CNPM(3TC-2.5đ) | Mạng máy tính(3TC-2.7đ) | TTNT(3TC-2.9đ)"},
+  {name:"LÊ THỊ PHƯƠNG",student_id:"SV002",timestamp:"20/04/2025 10:05:11",gpa1:"3.20",gpa2:"3.30",gpa3:"3.10",predicted:"3.00",warning:"MỨC CẢNH BÁO: CAM",totalTC:"45",gpaAccum:"3.20",fCount:"0",sem1:"Toán cao cấp(4TC-3.2đ) | Vật lý(3TC-3.5đ) | Lập trình C(3TC-3.0đ)",sem2:"Cơ sở dữ liệu(3TC-3.3đ) | Giải tích(3TC-3.1đ) | CTDL&GT(3TC-3.5đ)",sem3:"CNPM(3TC-3.0đ) | Mạng máy tính(3TC-3.2đ) | TTNT(3TC-3.1đ)"},
+  {name:"PHẠM VĂN ĐẠT",student_id:"SV003",timestamp:"21/04/2025 08:44:00",gpa1:"2.70",gpa2:"3.00",gpa3:"2.80",predicted:"2.60",warning:"MỨC CẢNH BÁO: VÀNG",totalTC:"42",gpaAccum:"2.83",fCount:"1",sem1:"Toán cao cấp(4TC-2.7đ) | Vật lý(3TC-2.9đ) | Lập trình C(3TC-0.0đ)",sem2:"Cơ sở dữ liệu(3TC-3.0đ) | Giải tích(3TC-3.1đ) | CTDL&GT(3TC-2.9đ)",sem3:"CNPM(3TC-2.8đ) | Mạng máy tính(3TC-2.9đ) | TTNT(3TC-2.7đ)"},
+  {name:"NGUYỄN VĂN BÌNH",student_id:"SV004",timestamp:"21/04/2025 09:30:00",gpa1:"3.80",gpa2:"3.90",gpa3:"3.70",predicted:"3.80",warning:"MỨC CẢNH BÁO: XANH",totalTC:"48",gpaAccum:"3.80",fCount:"0",sem1:"Toán cao cấp(4TC-3.8đ) | Vật lý(3TC-4.0đ) | Lập trình C(3TC-3.7đ)",sem2:"Cơ sở dữ liệu(3TC-3.9đ) | Giải tích(3TC-3.8đ) | CTDL&GT(3TC-4.0đ)",sem3:"CNPM(3TC-3.7đ) | Mạng máy tính(3TC-3.9đ) | TTNT(3TC-3.6đ)"}
+];
+
+var RECS={
+  red:[
+    {i:"fa-arrow-down",t:"Giảm số tín chỉ xuống 5 tín"},
+    {i:"fa-rotate-right",t:"Học lại môn bị điểm F{F_LIST}"},
+    {i:"fa-book-open",t:"Học cải thiện những môn bị điểm thấp"},
+    {i:"fa-clock",t:"Kế hoạch hóa lại thời gian biểu bản thân: Lập thời gian biểu chi tiết, theo dõi tiến độ học bằng checklist, tìm bạn bè/thầy cô cố vấn hỗ trợ, tạm hạn chế hoạt động ngoại khóa/đi làm thêm"},
+    {i:"fa-pen-to-square",t:"Quá trình học tích cực hơn để tăng điểm thành phần"},
+    {i:"fa-list-check",t:"Ôn thi hiệu quả: tập trung vào các dạng bài trong đề cương, xem đề các năm trước để đạt mục tiêu tăng điểm"}
+  ],
+  orange:[
+    {i:"fa-arrow-down",t:"Giảm số tín chỉ xuống 4 tín"},
+    {i:"fa-rotate-right",t:"Học lại môn bị điểm F{F_LIST}"},
+    {i:"fa-clock",t:"Tăng thời gian tự học, ôn các môn điểm thấp cần cải thiện"},
+    {i:"fa-pen-to-square",t:"Quá trình học tích cực hơn để tăng điểm thành phần"},
+    {i:"fa-list-check",t:"Ôn thi hiệu quả: tập trung vào các dạng bài trong đề cương, xem đề các năm trước để đạt mục tiêu tăng điểm"},
+    {i:"fa-user-tie",t:"Chủ động tìm sự trợ giúp từ thầy cô cố vấn/bạn bè để lên kế hoạch học tập hiệu quả"}
+  ],
+  yellow:[
+    {i:"fa-calendar-check",t:"Duy trì kế hoạch học tập"},
+    {i:"fa-rotate-right",t:"Học lại môn bị điểm F{F_LIST}"},
+    {i:"fa-clock",t:"Tăng thời gian học tập, giữ nhịp học đều từ đầu kỳ, không học dồn cuối kì"},
+    {i:"fa-file-lines",t:"Bắt đầu xây dựng hệ thống tài liệu học và thi cá nhân hóa của bản thân nhằm đạt kết quả tốt hơn trong kì sau"}
+  ],
+  green:[
+    {i:"fa-calendar-check",t:"Duy trì kế hoạch học tập"},
+    {i:"fa-trophy",t:"Đăng ký tham gia các cuộc thi học thuật"},
+    {i:"fa-flask",t:"Tham gia Nghiên cứu Khoa học (NCKH) cùng giảng viên"},
+    {i:"fa-id-card",t:"Xây dựng dần CV học thuật (dự án, chứng chỉ,...vv), chuẩn bị sớm cho định hướng tương lai"},
+    {i:"fa-handshake",t:"Kết nối với giảng viên tìm cơ hội research/intern"}
+  ]
+};
+
+var TC={red:"#dc2626",orange:"#ea580c",yellow:"#ca8a04",green:"#16a34a"};
+var allRows=[]; var curF="all"; var curQ="";
+var donutChart = null, barChart = null; // Biến lưu trữ biểu đồ
+
+function th(w){
+  if(!w) return "green";
+  var u = w.toUpperCase();
+  if(u.indexOf("ĐỎ")!==-1 || u.indexOf("NGUY CƠ RẤT CAO")!==-1) return "red";
+  if(u.indexOf("CAM")!==-1 || u.indexOf("NGUY CƠ CAO")!==-1)     return "orange";
+  if(u.indexOf("VÀNG")!==-1 || u.indexOf("VANG")!==-1 || u.indexOf("CẦN THEO")!==-1) return "yellow";
+  return "green";
+}
+function lbl(t){return{red:"Nguy cơ rất cao",orange:"Nguy cơ cao",yellow:"Cần theo dõi",green:"Ổn định"}[t]||"Ổn định";}
+function f2(v){return parseFloat(v)||0;}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function nowStr(){var d=new Date();return d.getHours().toString().padStart(2,"0")+":"+d.getMinutes().toString().padStart(2,"0")+" "+d.getDate().toString().padStart(2,"0")+"/"+(d.getMonth()+1).toString().padStart(2,"0")+"/"+d.getFullYear();}
+function dedup(rows){var seen={},res=[],done={};for(var i=rows.length-1;i>=0;i--){var id=String(rows[i].student_id||"").trim().toLowerCase();if(id&&!seen[id])seen[id]=rows[i];}rows.forEach(function(r){var id=String(r.student_id||"").trim().toLowerCase();if(id&&seen[id]&&!done[id]){done[id]=true;res.push(seen[id]);}});return res;}
+
+function parseSem(str){
+  if(!str||str==="Trống")return[];
+  return str.split("|").map(function(p){
+    p=p.trim();if(!p)return null;
+    var m=p.match(/^(.+?)\((\d+)TC-([\d.]+)đ\)$/);
+    return m?{name:m[1].trim(),credit:parseInt(m[2]),gpa:parseFloat(m[3])}:{name:p,credit:0,gpa:0};
+  }).filter(Boolean);
+}
+
+/* ===== LOAD DỮ LIỆU (FIX FETCH API) ===== */
+window.loadData = function() {
+  var ic = document.getElementById("ri");
+  if(ic) ic.classList.add("fa-spin");
+  
+  document.getElementById("st-load").style.display = "flex";
+  document.getElementById("st-err").style.display = "none";
+  document.getElementById("main-ct").style.display = "none";
+
+  // Thêm tham số t để chống lưu cache
+  var fetchUrl = SHEET_URL + "?action=read&t=" + new Date().getTime();
+
+  fetch(fetchUrl)
+    .then(response => {
+      if (!response.ok) throw new Error("Mạng lỗi");
+      return response.json();
+    })
+    .then(data => {
+      var r = Array.isArray(data) ? data : (data.data || data.rows || []);
+      if(r.length > 0) {
+        allRows = dedup(r);
+      } else {
+        allRows = dedup(SAMPLE);
+      }
+      finishLoad(ic, false);
+    })
+    .catch(error => {
+      console.error("Lỗi Fetch Data:", error);
+      allRows = dedup(SAMPLE);
+      finishLoad(ic, true);
+    });
+};
+
+function finishLoad(ic, hasError) {
+  if(ic) ic.classList.remove("fa-spin");
+  document.getElementById("upd-time").innerText = nowStr();
+  
+  renderAll();
+  
+  document.getElementById("st-load").style.display = "none";
+  if (hasError) {
+    document.getElementById("st-err").style.display = "flex";
+  }
+  document.getElementById("main-ct").style.display = "block";
+}
+
+/* ===== RENDER ===== */
+function renderAll(){
+  var c={red:0,orange:0,yellow:0,green:0};
+  allRows.forEach(function(r){c[th(r.warning||"")]++;});
+  
+  document.getElementById("ct-tot").innerText=allRows.length;
+  document.getElementById("ct-r").innerText=c.red;
+  document.getElementById("ct-o").innerText=c.orange;
+  document.getElementById("ct-y").innerText=c.yellow;
+  document.getElementById("ct-g").innerText=c.green;
+  
+  renderTable();
+  
+  // Render lại 2 Biểu đồ
+  renderChartDonut(c, allRows.length);
+  renderChartBar();
+}
+
+/* --- VẼ BIỂU ĐỒ TRÒN --- */
+function renderChartDonut(counts, total) {
+  var ctx = document.getElementById("chart-donut");
+  if(!ctx) return;
+  if(donutChart) donutChart.destroy();
+  
+  var lbls = ["Nguy cơ rất cao", "Nguy cơ cao", "Cần theo dõi", "Ổn định"];
+  var vals = [counts.red, counts.orange, counts.yellow, counts.green];
+  var cols = [TC.red, TC.orange, TC.yellow, TC.green];
+  
+  donutChart = new Chart(ctx, {
+    type: "doughnut",
+    data: {
+      labels: lbls,
+      datasets: [{ data: vals, backgroundColor: cols, borderWidth: 2, borderColor: "#fff" }]
+    },
+    options: {
+      cutout: "68%",
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } }
+    }
+  });
+
+  // Chú thích (Legend)
+  var lg = document.getElementById("donut-legend");
+  lg.innerHTML = "";
+  lbls.forEach((l, i) => {
+    var pct = total > 0 ? Math.round((vals[i]/total)*100) : 0;
+    lg.innerHTML += `
+      <div style="display:flex; justify-content:space-between; align-items:center; font-size:13px; padding:3px 0;">
+        <div style="display:flex; align-items:center; gap:8px;">
+            <span style="width:12px; height:12px; border-radius:50%; background:${cols[i]}"></span>
+            <span style="color:var(--g700); font-weight:600;">${l}</span>
+        </div>
+        <div><span style="font-weight:800; color:var(--g900);">${vals[i]}</span> <span style="color:var(--g500); font-size:12px;">(${pct}%)</span></div>
+      </div>
+    `;
+  });
+}
+
+/* --- VẼ BIỂU ĐỒ CỘT --- */
+function renderChartBar() {
+  var ctx = document.getElementById("chart-bar");
+  if(!ctx) return;
+  if(barChart) barChart.destroy();
+  
+  // Đếm sinh viên có GPA <= 3.0 và > 3.0 trong 3 học kỳ
+  var ky = [[0,0],[0,0],[0,0]];
+  allRows.forEach(r => {
+    [f2(r.gpa1), f2(r.gpa2), f2(r.gpa3)].forEach((g, i) => {
+      if(g <= 3.0) ky[i][0]++; else ky[i][1]++;
+    });
+  });
+
+  barChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: ["Học kỳ 1", "Học kỳ 2", "Học kỳ 3"],
+      datasets: [
+        { label: "Sinh viên có GPA ≤ 3.0", data: [ky[0][0], ky[1][0], ky[2][0]], backgroundColor: TC.red, borderRadius: 4, barPercentage: 0.6 },
+        { label: "Sinh viên có GPA > 3.0", data: [ky[0][1], ky[1][1], ky[2][1]], backgroundColor: TC.green, borderRadius: 4, barPercentage: 0.6 }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top', labels: { font: { family: "'Be Vietnam Pro'", size: 12 } } }
+      },
+      scales: {
+        y: { beginAtZero: true, ticks: { stepSize: 1 } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+/* --- RENDER BẢNG --- */
+function renderTable(){
+  var tb=document.getElementById("sv-tb");tb.innerHTML="";
+  var q=curQ.toLowerCase(); var shown=0;
+  allRows.forEach(function(r){
+    var t=th(r.warning||"");
+    if(curF!=="all"&&curF!==t)return;
+    if(q&&((r.student_id||"")+" "+(r.name||"")).toLowerCase().indexOf(q)===-1)return;
+    shown++;
+    var g1=f2(r.gpa1),g2=f2(r.gpa2),g3=f2(r.gpa3),pr=f2(r.predicted);
+    var delta=function(a,b){return b>a?'<i class="fa-solid fa-caret-up d-up"></i>':b<a?'<i class="fa-solid fa-caret-down d-dn"></i>':'';};
+    var tr=document.createElement("tr");
+    tr.className="svr";
+    tr.innerHTML="<td>"+shown+"</td>"+
+      "<td class='cl-id'>"+esc(r.student_id||"—")+"</td>"+
+      "<td class='cl-nm' style='text-align:left;'>"+esc(r.name||"—")+"</td>"+
+      "<td class='gpc hs'>"+g1.toFixed(2)+"</td>"+
+      "<td class='gpc hs'>"+g2.toFixed(2)+delta(g1,g2)+"</td>"+
+      "<td class='gpc hs'>"+g3.toFixed(2)+delta(g2,g3)+"</td>"+
+      "<td class='td-p'>"+pr.toFixed(2)+"</td>"+
+      "<td><span class='bdg b-"+t.charAt(0)+"'><span class='bdot2'></span>"+lbl(t)+"</span></td>"+
+      "<td><i class='fa-solid fa-chevron-right' style='color:var(--g400);font-size:12px;'></i></td>";
+    (function(row){tr.onclick=function(){showDetail(row);};})(r);
+    tb.appendChild(tr);
+  });
+  document.getElementById("sw").innerText=shown;
+  document.getElementById("tr2").innerText=allRows.length;
+  if(!shown){var em=document.createElement("tr");em.innerHTML="<td colspan='9'><div class='nd'><i class='fa-solid fa-inbox'></i>Không tìm thấy sinh viên nào</div></td>";tb.appendChild(em);}
+}
+
+window.setF=function(val,btn){
+  curF=val;
+  document.querySelectorAll(".fbtn").forEach(function(b){b.className="fbtn";});
+  btn.classList.add("fa-"+val);
+  renderTable();
+};
+window.doSearch=function(q){curQ=q.trim();renderTable();};
+
+/* ===== DETAIL ===== */
+/* ===== DETAIL (MÀU SẮC TỪNG CỘT ĐIỂM TÍNH THEO ĐIỀU KIỆN RIÊNG) ===== */
+window.showDetail = function(r) {
+    var t = th(r.warning || ""), lb = lbl(t); // Nhãn cảnh báo tổng thể của SV
+    var g1 = f2(r.gpa1), g2 = f2(r.gpa2), g3 = f2(r.gpa3), pr = f2(r.predicted);
+
+    // 1. Màu của khối Hero (Tiêu đề trên cùng) vẫn giữ theo Cảnh báo tổng thể để phân biệt hồ sơ nhanh
+    document.getElementById("d-hero").className = "hero t-" + t.charAt(0) + " ai";
+
+    document.getElementById("d-name").innerText = r.name || "—";
+    document.getElementById("d-id").innerText = "Mã SV: " + (r.student_id || "—");
+    document.getElementById("d-badge").innerText = lb;
+    document.getElementById("d-bc").innerText = r.name || "Chi tiết";
+    var ts = r.timestamp || r.Timestamp || r["Thời gian"] || "";
+    document.getElementById("d-ts").innerText = ts ? "Nộp: " + ts : "—";
+
+    /* --- SEMESTER BLOCKS & TÌM MÔN F --- */
+    var semCfg = [{key: "sem1", label: "Học kỳ 1", gpa: g1}, {key: "sem2", label: "Học kỳ 2", gpa: g2}, {key: "sem3", label: "Học kỳ 3", gpa: g3}];
+    var semHtml = "";
+    var fSubs = []; 
+
+    semCfg.forEach(function(sc) {
+        var subs = parseSem(r[sc.key] || "");
+        var semTC = 0, semWG = 0;
+
+        subs.forEach(function(s) {
+            if (s.credit > 0) {
+                semTC += s.credit;
+                semWG += s.credit * s.gpa;
+            }
+            if (s.gpa === 0 && s.credit > 0 && s.name) {
+                fSubs.push(s.name.trim());
+            }
+        });
+
+        semHtml += '<div class="sem-blk">';
+        semHtml += '<div class="sem-ttl"><span>' + sc.label + '</span><span style="font-size:14px;color:var(--g500);font-weight:600;">GPA: <strong style="color:var(--bd);">' + sc.gpa.toFixed(2) + '</strong></span></div>';
+        semHtml += '<div class="sem-tw">';
+        if (!subs.length) {
+            semHtml += '<div style="padding:14px 18px;color:var(--g400);font-size:14px;"><i class="fa-solid fa-inbox"></i> Không có dữ liệu môn học</div>';
+        } else {
+            semHtml += '<table class="semt"><thead><tr><th style="width:44px;">STT</th><th style="text-align:left;">Tên môn học</th><th style="width:80px;">Số TC</th><th style="width:110px;">Điểm (4.0)</th></tr></thead><tbody>';
+            subs.forEach(function(s, i) {
+                var isF = s.gpa === 0;
+                semHtml += '<tr><td style="color:var(--g400);">' + (i + 1) + '</td>';
+                semHtml += '<td class="td-nm">' + esc(s.name) + '</td>';
+                semHtml += '<td>' + s.credit + '</td>';
+                semHtml += '<td><span class="td-gv' + (isF ? ' gf' : '') + '">' + s.gpa.toFixed(1) + '</span></td></tr>';
+            });
+            semHtml += '</tbody></table>';
+        }
+        semHtml += '</div>';
+semHtml += '<div class="sem-ft"><span class="sem-sv">Tổng TC: <span>' + semTC + '</span></span> <span class="sem-sv">GPA Kỳ: <span>' + sc.gpa.toFixed(2) + '</span></span></div>';
+        semHtml += '</div>';
+    });
+    document.getElementById("d-sems").innerHTML = semHtml;
+
+    /* --- SUMMARY --- */
+    document.getElementById("d-accum").innerText = r.gpaAccum ? parseFloat(r.gpaAccum).toFixed(2) : ((g1 + g2 + g3) / 3).toFixed(2);
+    document.getElementById("d-tc").innerText = (r.totalTC || "—") + " TC";
+    document.getElementById("d-g3v").innerText = g3.toFixed(2);
+    document.getElementById("d-fc").innerText = fSubs.length + " môn";
+
+    /* --- BIỂU ĐỒ CỘT XU HƯỚNG (ĐÃ FIX: MÀU THEO GPA TỪNG KỲ) --- */
+    var gpas = [g1, g2, g3, pr];
+    var bids = ["b1", "b2", "b3", "b4"], tvids = ["tv1", "tv2", "tv3", "tv4"];
+    
+setTimeout(function() {
+    gpas.forEach(function(g, i) {
+        var bar = document.getElementById(bids[i]);
+        var tv  = document.getElementById(tvids[i]);
+        if(!bar || !tv) return;
+        bar.style.height = Math.max((g / 4) * 100, 2) + "%";
+        var barColor = TC.green;
+        if      (g <= 2.5)             barColor = TC.red;
+        else if (g > 2.5 && g <= 3.0) barColor = TC.orange;
+        else if (g > 3.0 && g <= 3.2) barColor = TC.yellow;
+        bar.className = "tb2";
+        bar.style.background = (i === 3) ? TC[t] : barColor;
+        tv.innerText = g.toFixed(2);
+    });
+    var a12 = document.getElementById("arr12"), a23 = document.getElementById("arr23");
+    if(a12) a12.style.color = g2 >= g1 ? "var(--green)" : "var(--red)";
+    if(a23) a23.style.color = g3 >= g2 ? "var(--green)" : "var(--red)";
+}, 80);
+
+    /* --- KHỐI GPA DỰ BÁO LỚN & KHUYẾN NGHỊ (Theo màu Kỳ 4 dự báo) --- */
+    // GPA kỳ 4 dự báo cũng áp dụng đúng dải màu độc lập của nó
+    var predictColorClass = t.charAt(0); // Mặc định theo phân loại hệ thống
+    
+    document.getElementById("d-gpb").className = "gpb t-" + t.charAt(0);
+    document.getElementById("d-pn").innerText = pr.toFixed(2);
+    document.getElementById("d-pw").innerText = lb.toUpperCase();
+
+    var progressBarFill = document.getElementById("d-pp");
+    progressBarFill.style.width = Math.min((pr / 4) * 100, 100) + "%";
+
+    /* --- RECS (KHUYẾN NGHỊ & MÔN F) --- */
+    var ul = document.getElementById("d-recs");
+    ul.className = "rl2 l" + t.charAt(0);
+    ul.innerHTML = "";
+
+    var uniqueFSubs = [...new Set(fSubs)]; 
+    var fListStr = uniqueFSubs.length > 0 ? ": <strong>" + uniqueFSubs.join(", ") + "</strong>" : "";
+
+    (RECS[t] || []).forEach(function(rec) {
+        var li = document.createElement("li");
+        var textFinal = rec.t;
+        if(textFinal.includes("{F_LIST}")) {
+            if(uniqueFSubs.length === 0) return; 
+            textFinal = textFinal.replace("{F_LIST}", fListStr); 
+        }
+        li.innerHTML = '<i class="fa-solid ' + rec.i + ' ri"></i><span>' + textFinal + '</span>';
+        ul.appendChild(li);
+    });
+
+    /* --- SWITCH PAGE --- */
+    document.getElementById("pg-list").classList.remove("on");
+    document.getElementById("pg-det").classList.add("on");
+    window.scrollTo(0, 0);
+};
+
+window.goBack = function() {
+  document.getElementById("pg-det").classList.remove("on");
+  document.getElementById("pg-list").classList.add("on");
+  window.scrollTo(0,0);
+};
+
+// INITIALIZE
+function init(){if(!document.getElementById("sv-tb")){setTimeout(init,100);return;}loadData();}
+init();
+})();
+</script>
+</body>
+</html>
