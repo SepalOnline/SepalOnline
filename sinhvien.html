@@ -1,0 +1,600 @@
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<div id="sepal-page-2">
+  <div class="sepal-fullwidth-hack">
+    <div class="sepal-lms-body">
+
+      <div class="sepal-top-header">
+        <div class="header-title">SEPAL: Nhập Dữ liệu Học tập</div>
+        <div class="header-inputs">
+          <input type="text" id="input-student-name" placeholder="Họ và tên..." class="header-input name-input">
+          <span style="margin:0 10px; color:white;">-</span>
+          <input type="text" id="input-student-id" placeholder="Mã SV..." class="header-input id-input">
+        </div>
+      </div>
+
+      <div class="sepal-layout-grid">
+        <div class="sepal-semesters-col">
+          <div id="semesters-container"></div>
+        </div>
+        <div class="sepal-summary-col">
+          <div class="summary-card">
+            <div class="summary-header">Tóm tắt &amp; Dự báo</div>
+            <div class="summary-body">
+              <div class="stat-row">
+                <span>Tổng số học kỳ:</span>
+                <span class="stat-value">3</span>
+              </div>
+              <div class="stat-row">
+                <span>Tổng số tín chỉ:</span>
+                <span id="total-credits" class="stat-value">0</span>
+              </div>
+              <div class="stat-row highlight-stat">
+                <span>GPA Tích lũy (tạm tính):</span>
+                <span id="global-gpa" class="stat-value">0.00</span>
+              </div>
+              <button class="btn-predict" id="btn-predict" onclick="triggerPrediction()">
+                Dự báo Kết quả &nbsp;<i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div id="sepal-page-3" style="display:none;">
+  <div class="sepal-fullwidth-hack">
+    <div class="sepal-lms-body" style="max-width:980px;">
+
+      <div class="dashboard-title">SEPAL – Dashboard Cá nhân</div>
+
+      <div id="dashboard-grid" class="dashboard-grid theme-yellow">
+        <div class="panel-left">
+          <div class="panel-left-header">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            DỰ BÁO KẾT QUẢ &amp; THÔNG TIN SINH VIÊN
+          </div>
+          <div class="panel-left-body">
+            <div class="sv-info-label">Thông tin Sinh viên:</div>
+            <div class="sv-name-row">
+              <span class="sv-name">Tên: <span id="res-name"></span></span>
+              <span class="sv-id">Mã SV: <span id="res-id"></span></span>
+            </div>
+            <div class="info-item">
+              <span>GPA Kỳ gần nhất (Kỳ 3):</span>
+              <span class="val" id="res-gpa3">—</span>
+            </div>
+            <div class="info-item">
+              <span>GPA Tích lũy (tạm tính):</span>
+              <span class="val" id="res-gpa-accum">—</span>
+            </div>
+            <div class="info-item">
+              <span>Tổng số Tín chỉ (đã nhập):</span>
+              <span class="val" id="res-total-tc">—</span>
+            </div>
+            <div class="info-item">
+              <span>Số môn F:</span>
+              <span class="val" id="res-f-count">—</span>
+            </div>
+            <div class="gpa-box">
+              <div class="gpa-box-label">GPA Kỳ 4 (Dự Báo)</div>
+              <div class="gpa-box-value" id="res-gpa-4">0.00</div>
+              <div class="canh-bao-label" id="res-warning-label">MỨC CẢNH BÁO: — &nbsp;<i class="fa-solid fa-triangle-exclamation"></i></div>
+              <div class="progress-bar-wrap">
+                <div class="progress-bar-fill" id="res-progress-bar" style="width:0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-right">
+          <div class="panel-right-header">
+            <i class="fa-solid fa-lightbulb"></i>
+            <span id="rec-header-text">KHUYẾN NGHỊ</span>
+          </div>
+          <div class="panel-right-body">
+            <p class="rec-intro" id="rec-intro-text">Dựa trên kết quả dự báo, hãy tham khảo các khuyến nghị sau:</p>
+            <ul class="rec-list" id="rec-list"></ul>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align:center; margin-top:24px;">
+        <button class="btn-back" onclick="goBackToPage2()">
+          <i class="fa-solid fa-rotate-left"></i> Nhập lại dữ liệu
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<style>
+.sepal-fullwidth-hack{width:100vw;position:relative;left:50%;right:50%;margin-left:-50vw;margin-right:-50vw;background-color:#dde8f5;}
+.sepal-lms-body{font-family:'Be Vietnam Pro','Inter',sans-serif;max-width:1200px;margin:0 auto;padding:30px 20px;box-sizing:border-box;color:#1e293b;min-height:80vh;}
+.sepal-top-header{background:linear-gradient(135deg,#1a3a6e 0%,#2c5282 100%);color:white;padding:20px 30px;border-radius:12px;margin-bottom:28px;box-shadow:0 8px 20px rgba(44,82,130,0.25);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:15px;}
+.header-title{font-size:20px;font-weight:800;text-transform:uppercase;letter-spacing:1px;}
+.header-inputs{display:flex;align-items:center;}
+.header-input{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.35);color:white;padding:10px 15px;border-radius:7px;font-family:'Be Vietnam Pro',sans-serif;font-size:16px;outline:none;}
+.header-input::placeholder{color:rgba(255,255,255,0.7);}
+.name-input{width:250px;font-weight:600;}
+.id-input{width:150px;font-weight:600;}
+
+.sepal-layout-grid{display:flex;gap:26px;align-items:flex-start;}
+.sepal-semesters-col{flex:1;min-width:0;}
+.sepal-summary-col{width:340px;position:sticky;top:20px;}
+.semester-card{background:white;border-radius:12px;border:1px solid #e2e8f0;margin-bottom:22px;box-shadow:0 4px 12px rgba(0,0,0,0.06);overflow:hidden;}
+.semester-header{background:#f8fafc;padding:16px 22px;font-size:17px;font-weight:700;color:#0f172a;display:flex;justify-content:space-between;align-items:center;cursor:pointer;border-bottom:1px solid #e2e8f0;}
+.sepal-table{width:100%;border-collapse:collapse;text-align:center;}
+.sepal-table th{background:#fff;padding:13px;font-weight:600;font-size:13px;color:#475569;border-bottom:2px solid #e2e8f0;}
+.sepal-table td{padding:10px 13px;border-bottom:1px solid #f1f5f9; transition: background 0.3s;}
+
+/* CSS CHO INPUT & DROPDOWN MÔN HỌC */
+.sepal-table input, .sepal-select {
+    width: 100%;
+    padding: 9px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    outline: none;
+    font-family: 'Be Vietnam Pro', sans-serif;
+    font-size: 14px;
+    background: #fff;
+    color: #1e293b;
+}
+.sepal-table input { text-align: center; }
+.sepal-select { text-align: left; cursor: pointer; }
+.sepal-table input:focus, .sepal-select:focus { border-color: #3b82f6; }
+
+.semester-footer{padding:14px 22px;background:#f8fafc;display:flex;justify-content:space-between;align-items:center;border-top:1px solid #e2e8f0;}
+.sem-stats{font-size:14px;color:#475569;font-weight:500;}
+.summary-card{background:white;border-radius:12px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 10px 25px rgba(0,0,0,0.1);}
+.summary-header{background:#f59e0b;color:white;padding:18px;font-size:17px;font-weight:700;text-align:center;}
+.summary-body{padding:22px;}
+.stat-row{display:flex;justify-content:space-between;margin-bottom:13px;font-size:14px;color:#475569;}
+.stat-value{font-weight:700;color:#1e293b;}
+.highlight-stat{margin-top:16px;padding-top:16px;border-top:2px dashed #e2e8f0;}
+.highlight-stat .stat-value{font-size:20px;color:#16a34a;}
+.btn-predict{width:100%;margin-top:22px;background:#0f172a;color:white;border:none;padding:16px;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Be Vietnam Pro',sans-serif;}
+.btn-predict:disabled{background:#64748b;cursor:not-allowed;}
+.btn-add-subj{background:#22c55e;color:white;border:none;border-radius:6px;padding:9px 15px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:7px;font-size:13px;font-family:'Be Vietnam Pro',sans-serif;}
+.btn-delete-row{background:#ef4444;color:white;border:none;border-radius:6px;padding:7px 11px;cursor:pointer;}
+.btn-back{background:#1a3a6e;color:white;border:none;padding:12px 28px;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;font-family:'Be Vietnam Pro',sans-serif;display:inline-flex;align-items:center;gap:8px;}
+
+/* TRANG 3 */
+.dashboard-title{text-align:center;font-size:24px;font-weight:800;color:#1a3a6e;margin-bottom:22px;text-transform:uppercase;}
+.dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;}
+.panel-left{border-radius:12px;overflow:hidden;box-shadow:0 6px 20px rgba(0,0,0,0.12);}
+.panel-left-header{padding:13px 18px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;display:flex;align-items:center;gap:8px;color:white;}
+.panel-left-body{background:white;padding:20px 22px;}
+.sv-info-label{font-size:13px;font-weight:700;color:#374151;margin-bottom:10px;}
+.sv-name-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:14px;border-bottom:1px dashed #e5e7eb;flex-wrap:wrap;gap:6px;}
+.sv-name{font-size:15px;font-weight:700;color:#1e293b;}
+.sv-id{font-size:14px;color:#64748b;font-weight:500;}
+.info-item{display:flex;justify-content:space-between;font-size:14px;color:#374151;margin-bottom:8px;}
+.info-item .val{font-weight:700;color:#1e293b;}
+.gpa-box{margin-top:16px;border-radius:10px;padding:20px;text-align:center;color:white;}
+.gpa-box-label{font-size:14px;font-weight:700;text-transform:uppercase;opacity:0.92;margin-bottom:4px;}
+.gpa-box-value{font-size:52px;font-weight:800;line-height:1.1;margin:4px 0;}
+.canh-bao-label{font-size:13px;font-weight:700;text-transform:uppercase;margin-top:4px;}
+.progress-bar-wrap{margin-top:12px;background:rgba(255,255,255,0.25);border-radius:99px;height:7px;overflow:hidden;}
+.progress-bar-fill{height:100%;border-radius:99px;background:white;transition:width 0.8s ease;}
+.panel-right{border-radius:12px;overflow:hidden;box-shadow:0 6px 20px rgba(0,0,0,0.12);}
+.panel-right-header{padding:13px 18px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;display:flex;align-items:center;gap:8px;color:white;}
+.panel-right-body{background:white;padding:20px 22px;}
+.rec-intro{font-size:14px;color:#374151;margin-bottom:16px;line-height:1.6;}
+.rec-list{list-style:none;padding:0;margin:0;}
+.rec-list li{display:flex;align-items:flex-start;gap:10px;font-size:14px;color:#1e293b;padding:10px 14px;border-radius:8px;margin-bottom:8px;border-left:3px solid transparent;line-height:1.5;font-weight:500;}
+.rec-list li .rec-icon{font-size:15px;flex-shrink:0;margin-top:1px;}
+.theme-red .panel-left-header{background:#dc2626;} .theme-red .panel-right-header{background:#dc2626;} .theme-red .gpa-box{background:linear-gradient(135deg,#dc2626,#b91c1c);} .theme-red .rec-list li{border-left-color:#dc2626;background:#fef2f2;} .theme-red .rec-list li .rec-icon{color:#dc2626;}
+.theme-orange .panel-left-header{background:#ea580c;} .theme-orange .panel-right-header{background:#ea580c;} .theme-orange .gpa-box{background:linear-gradient(135deg,#ea580c,#c2410c);} .theme-orange .rec-list li{border-left-color:#ea580c;background:#fff7ed;} .theme-orange .rec-list li .rec-icon{color:#ea580c;}
+.theme-yellow .panel-left-header{background:#ca8a04;} .theme-yellow .panel-right-header{background:#ca8a04;} .theme-yellow .gpa-box{background:linear-gradient(135deg,#ca8a04,#a16207);} .theme-yellow .rec-list li{border-left-color:#ca8a04;background:#fefce8;} .theme-yellow .rec-list li .rec-icon{color:#ca8a04;}
+.theme-green .panel-left-header{background:#16a34a;} .theme-green .panel-right-header{background:#16a34a;} .theme-green .gpa-box{background:linear-gradient(135deg,#16a34a,#15803d);} .theme-green .rec-list li{border-left-color:#16a34a;background:#f0fdf4;} .theme-green .rec-list li .rec-icon{color:#16a34a;}
+@media(max-width:900px){.sepal-layout-grid{flex-direction:column;}.sepal-summary-col{width:100%;position:static;}.dashboard-grid{grid-template-columns:1fr;}}
+</style>
+
+<script>
+(function() {
+  const SHEET_URL = "https://script.google.com/macros/s/AKfycbwU1njSLVUk4QasSEkd62Xrn8CXXDOaSNQJbe4uyEqLik7W72bNRaxFOD09vm2CAXfc7w/exec"; 
+
+  // ==========================================================
+  // DANH SÁCH MÔN HỌC (Dropdown List)
+  // ==========================================================
+  const SUBJECTS = [
+    "Đại số tuyến tính",
+    "Giải tích 1",
+    "Hình học giải tích",
+    "Tâm lý học",
+    "Những nguyên lý cơ bản của chủ nghĩa Mác Lenin ",
+    "Tin học",
+    "Giải tích 2",
+    "Giáo dục học",
+    "Những NLCB của CN Mác - Lênin 2 KTCT",
+    "Tiếng Anh",
+    "TỰ CHỌN 3 (Cơ sở văn hóa VN, Hà Nội học)",
+    "Nghiệp vụ sư phạm 1",
+    "Đường lối Cách mạng của Đảng cộng sản Việt Nam",
+    "Đại số đại cương",
+    "Giải tích 3",
+    "PPDH đại cương môn Toán",
+    "Tiếng Việt thực hành",
+    "TỰ CHỌN (Âm nhạc, mỹ thuật, biển và hải đảo VN...)",
+    "Hình học Afin và hình học Ơclit",
+    "Số học",
+    "Nghiệp vụ sư phạm 2",
+    "Tư tưởng Hồ Chí Minh",
+    "Hàm biến phức",
+    "Hình học xạ ảnh",
+    "Lý thuyết số(2)",
+    "Nghiệp vụ sư phạm 3",
+    "Thực tập sư phạm 1",
+    "Tôpô đại cương",
+    "Đại số sơ cấp",
+    "Lý thuyết độ đo và tích phân",
+    "Lý thuyết xác suất và thống kê toán học",
+    "Phương trình vi phân",
+    "PPDH các nội dung môn Toán",
+    "Tiếng Anh chuyên ngành",
+    "Giải tích hàm",
+    "Pháp luật đại cương",
+    "Phương trình đạo hàm riêng",
+    "Quản lý hành chính nhà nước và quản lý ngành",
+    "Quy hoạch tuyến tính",
+    "Thực tập sư phạm 2",
+    "Giải tích số",
+    "Hình học sơ cấp",
+    "Hướng dẫn dạy học Toán bằng Tiếng Anh",
+    "Phương pháp nghiên cứu khoa học",
+    "Tự chọn 7 (Lịch sử toán, phần mềm dạy học)",
+    "Tự chọn 8 (Giải tích nâng cao, không gian vecto topo)",
+    "Tự chọn 9 (Hình học vi phân, cơ lý thuyết)",
+    "Thực tập sư phạm 3",
+    "Khóa luận tốt nghiệp",
+    "Dạy học phân hóa phần đại số",
+    "Dạy học phân hóa phần hình học",
+    "Một số chuyên đề nâng cao về dãy số và hàm số"
+  ];
+
+  function sepalInit() {
+    var container = document.getElementById('semesters-container');
+    if (!container) { setTimeout(sepalInit, 100); return; }
+    if (document.getElementById('sem-card-3')) return;
+    
+    container.innerHTML = '';
+    for (let i = 1; i <= 3; i++) {
+        let html = `
+        <div class="semester-card" id="sem-card-${i}">
+            <div class="semester-header" onclick="sepalToggleSem(${i})">
+                <span>Học kỳ ${i}</span><i class="fa-solid fa-chevron-up" id="icon-sem-${i}"></i>
+            </div>
+            <div class="semester-body" id="body-sem-${i}">
+                <table class="sepal-table">
+                    <thead><tr><th style="width:44px;">STT</th><th style="text-align:left;">Tên môn học</th><th style="width:90px;">Số TC</th><th style="width:110px;">Điểm (4.0)</th><th style="width:44px;">Xóa</th></tr></thead>
+                    <tbody id="tbody-sem-${i}"></tbody>
+                </table>
+                <div class="semester-footer">
+                    <button class="btn-add-subj" onclick="sepalAddSubject(${i})">
+                        <i class="fa-solid fa-plus"></i> Thêm môn học
+                    </button>
+                    <div class="sem-stats"><b>TC: <span class="sem-tc-val">0</span>&nbsp;|&nbsp;GPA: <span class="sem-gpa-val">0.00</span></b></div>
+                </div>
+            </div>
+        </div>`;
+        container.insertAdjacentHTML('beforeend', html);
+        sepalAddSubject(i);
+    }
+    sepalCalc();
+  }
+
+  window.sepalAddSubject = function(semId, name='', credit='', gpa='') {
+    var tbody = document.getElementById('tbody-sem-' + semId);
+    if (!tbody) return;
+
+    // Tạo HTML cho Dropdown
+    let optionsHtml = `<option value="">-- Chọn môn học --</option>`;
+    SUBJECTS.forEach(subj => {
+        let selected = (name === subj) ? "selected" : "";
+        optionsHtml += `<option value="${subj}" ${selected}>${subj}</option>`;
+    });
+
+    var tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="row-index">1</td>
+      <td>
+        <select class="subj-name sepal-select" onchange="clearRowError(this)">
+            ${optionsHtml}
+        </select>
+      </td>
+      <td><input type="number" class="val-credit" value="${credit}" placeholder="TC" min="1" max="10" step="1" oninput="sepalValidateCredit(this);clearRowError(this);sepalCalc()"></td>
+      <td><input type="number" class="val-gpa" value="${gpa}" placeholder="0.0" min="0" max="4" step="0.1" oninput="sepalValidateGpa(this);clearRowError(this);sepalCalc()"></td>
+      <td><button class="btn-delete-row" onclick="this.closest('tr').remove();sepalCalc()"><i class="fa-solid fa-trash-can"></i></button></td>`;
+    tbody.appendChild(tr);
+    sepalCalc();
+  };
+
+  window.sepalValidateCredit = function(input) {
+    if (input.value !== '') {
+      var v = parseFloat(input.value);
+      if (v < 1) input.value = 1; else if (v > 10) input.value = 10; else input.value = Math.floor(v);
+    }
+  };
+  window.sepalValidateGpa = function(input) {
+    if (input.value !== '') {
+      var v = parseFloat(input.value);
+      if (v < 0) input.value = 0; if (v > 4) input.value = 4;
+    }
+  };
+  window.clearRowError = function(input) { input.closest('tr').style.background = 'transparent'; };
+
+  window.sepalToggleSem = function(semId) {
+    var body = document.getElementById('body-sem-' + semId);
+    var icon = document.getElementById('icon-sem-' + semId);
+    if (!body) return;
+    body.style.display = (body.style.display === 'none') ? 'block' : 'none';
+    if (icon) { icon.classList.toggle('fa-chevron-down'); icon.classList.toggle('fa-chevron-up'); }
+  };
+
+  window.sepalCalc = function() {
+    var globalTC = 0, globalWGPA = 0;
+    document.querySelectorAll('.semester-card').forEach(function(card) {
+      var sTC = 0, sWGPA = 0, idx = 1;
+      card.querySelectorAll('tbody tr').forEach(function(row) {
+        var idxEl = row.querySelector('.row-index');
+        if (idxEl) idxEl.innerText = idx++;
+        var c = parseFloat(row.querySelector('.val-credit').value) || 0;
+        var g = parseFloat(row.querySelector('.val-gpa').value) || 0;
+        if (c > 0) { sTC += c; sWGPA += c * g; }
+      });
+      card.querySelector('.sem-tc-val').innerText = sTC;
+      card.querySelector('.sem-gpa-val').innerText = sTC > 0 ? (sWGPA / sTC).toFixed(2) : '0.00';
+      globalTC += sTC; globalWGPA += sWGPA;
+    });
+    var tcEl = document.getElementById('total-credits');
+    var gpaEl = document.getElementById('global-gpa');
+    if (tcEl) tcEl.innerText = globalTC;
+    if (gpaEl) gpaEl.innerText = globalTC > 0 ? (globalWGPA / globalTC).toFixed(2) : '0.00';
+  };
+
+  function getFSubjects() {
+    var result = [];
+    document.querySelectorAll('.semester-card').forEach(function(card) {
+      card.querySelectorAll('tbody tr').forEach(function(row) {
+        var name   = row.querySelector('.subj-name').value.trim();
+        var rawVal = row.querySelector('.val-gpa').value.trim();
+        var gpaV   = parseFloat(rawVal);
+        var tcV    = parseFloat(row.querySelector('.val-credit').value) || 0;
+        if (tcV > 0 && name && rawVal !== '' && !isNaN(gpaV) && gpaV === 0) result.push(name);
+      });
+    });
+    return result;
+  }
+
+  function getSemGPAs() {
+    var gpas = [];
+    document.querySelectorAll('.semester-card').forEach(function(card) {
+      gpas.push(parseFloat(card.querySelector('.sem-gpa-val').innerText) || 0);
+    });
+    return gpas;
+  }
+
+  function isTrendingDown(gpas) {
+    for (var i = 1; i < gpas.length; i++) { if (gpas[i] >= gpas[i - 1]) return false; }
+    return gpas.length >= 2;
+  }
+
+// SAU KHI SỬA — xử lý đủ 2 trường hợp:
+function resolveImprovements() {
+    // Key = "tên môn|||số TC" để phân biệt cùng tên khác TC (là 2 môn khác nhau)
+    var seen = {};
+    var improved = [];  // môn được gộp điểm cao hơn
+    var duplicates = []; // môn trùng hoàn toàn (cùng tên, cùng TC, cùng điểm)
+
+    document.querySelectorAll('.semester-card').forEach(function(card) {
+      card.querySelectorAll('tbody tr').forEach(function(row) {
+        var name = row.querySelector('.subj-name').value.trim().toLowerCase();
+        if (!name) return;
+        var tc  = parseFloat(row.querySelector('.val-credit').value) || 0;
+        var gpa = parseFloat(row.querySelector('.val-gpa').value) || 0;
+
+        // Key gồm CẢ tên lẫn số TC
+        var key = name + '|||' + tc;
+
+        if (seen[key]) {
+          // Đã tồn tại môn cùng tên + cùng TC
+          if (gpa > seen[key].gpa) {
+            // Bản mới có điểm cao hơn → cập nhật điểm vào bản cũ
+            seen[key].row.querySelector('.val-gpa').value = gpa;
+            seen[key].gpa = gpa;
+            if (improved.indexOf(name) === -1) improved.push(name);
+          }
+          // Xóa dòng trùng (dù điểm cao hay thấp hơn, chỉ giữ 1)
+          row.remove();
+        } else {
+          seen[key] = { row: row, gpa: gpa };
+        }
+      });
+    });
+
+    // Thông báo gọn, không alert (hiển thị console để không gián đoạn)
+    if (improved.length > 0) {
+      console.log('[SEPAL] Đã gộp điểm cao hơn cho môn: ' + improved.map(function(s){return s.toUpperCase();}).join(', '));
+    }
+}
+
+  function validateInputs() {
+    var hasError = false, totalSubjects = 0;
+    document.querySelectorAll('.semester-card tbody tr').forEach(function(row) {
+      var n = row.querySelector('.subj-name').value.trim();
+      var c = row.querySelector('.val-credit').value;
+      var g = row.querySelector('.val-gpa').value;
+      if (n !== '' || c !== '' || g !== '') {
+        totalSubjects++;
+        if (n === '' || c === '' || g === '') { hasError = true; row.style.background = '#fee2e2'; }
+      }
+    });
+    if (totalSubjects === 0) { alert("Bạn chưa nhập môn học nào! Không thể dự báo."); return false; }
+    if (hasError) { alert("Vui lòng điền ĐẦY ĐỦ (chọn Tên môn, nhập Số TC và Điểm) cho các dòng đã thêm!"); return false; }
+    return true;
+  }
+
+  function analyzeWarning(gpaAccum, totalTC, fSubjects, semGPAs, gpa4) {
+    var fCount = fSubjects.length;
+    if (gpaAccum <= 2.5 || gpa4 <= 2.5 || isTrendingDown(semGPAs) || fCount >= 3 || (totalTC >= 20 && gpaAccum <= 3.0)) {
+      var recs = [];
+      if (gpaAccum <= 2.5 || (totalTC >= 20 && gpaAccum <= 3.0))
+        recs.push({ icon:'fa-arrow-down', text:'Giảm số tín chỉ xuống còn <strong>' + (totalTC - 5) + '</strong> TC' });
+      if (fCount > 0)
+        recs.push({ icon:'fa-rotate-right', text:'Học lại các môn bị điểm F: <strong>' + fSubjects.join(', ') + '</strong>' });
+      recs.push({ icon:'fa-book-open', text:'Học cải thiện những môn bị điểm thấp' });
+      recs.push({ icon:'fa-user-tie',  text:'Gặp Cố vấn học tập để xem xét lại quá trình học' });
+      return { theme:'theme-red', label:'MỨC CẢNH BÁO: ĐỎ', header:'KHUYẾN NGHỊ CHO CẢNH BÁO ĐỎ', intro:'Kết quả học tập đang ở mức nguy hiểm. Bạn cần thực hiện ngay:', recs:recs };
+    }
+    if ((gpaAccum > 2.5 && gpaAccum <= 3.0) || (gpa4 > 2.5 && gpa4 <= 3.0) || fCount === 2 || (totalTC >= 18 && gpaAccum <= 3.0)) {
+      var recs = [];
+      if ((gpaAccum > 2.5 && gpaAccum <= 3.0) || (totalTC >= 18 && gpaAccum <= 3.0))
+        recs.push({ icon:'fa-arrow-down', text:'Giảm số tín chỉ xuống còn <strong>' + (totalTC - 4) + '</strong> TC' });
+      if (fCount > 0)
+        recs.push({ icon:'fa-rotate-right', text:'Học lại môn bị điểm F: <strong>' + fSubjects.join(', ') + '</strong>' });
+      recs.push({ icon:'fa-clock', text:'Tăng thời gian tự học và ôn lại các môn còn yếu' });
+      return { theme:'theme-orange', label:'MỨC CẢNH BÁO: CAM', header:'KHUYẾN NGHỊ CHO CẢNH BÁO CAM', intro:'Kết quả học tập ở mức cần chú ý. Hãy tham khảo:', recs:recs };
+    }
+    if ((gpaAccum >= 3.0 && gpaAccum < 3.2) || (gpa4 >= 3.0 && gpa4 < 3.2) || fCount === 1) {
+      var recs = [];
+      recs.push({ icon:'fa-calendar-check', text:'Duy trì kế hoạch học tập hiện tại' });
+      if (fCount > 0)
+        recs.push({ icon:'fa-rotate-right', text:'Cải thiện môn bị điểm F: <strong>' + fSubjects[0] + '</strong>' });
+      recs.push({ icon:'fa-brain', text:'Tăng cường thời gian ôn tập' });
+      return { theme:'theme-yellow', label:'MỨC CẢNH BÁO: VÀNG', header:'KHUYẾN NGHỊ CHO CẢNH BÁO VÀNG', intro:'Kết quả có dấu hiệu cần cải thiện. Hãy tham khảo:', recs:recs };
+    }
+    return { theme:'theme-green', label:'MỨC CẢNH BÁO: XANH', header:'KHUYẾN NGHỊ TỐT', intro:'Kết quả học tập tốt. Tiếp tục phát huy:', recs:[ { icon:'fa-calendar-check', text:'Duy trì kế hoạch học tập' }, { icon:'fa-trophy', text:'Tham gia thi học thuật' }, { icon:'fa-flask',  text:'Tham gia NCKH cùng giảng viên' } ]};
+  }
+
+  function getVNTimestamp() {
+    var now = new Date();
+    var vn  = new Date(now.getTime() + 7 * 60 * 60 * 1000);
+    var pad = function(n) { return n < 10 ? '0' + n : '' + n; };
+    return pad(vn.getUTCDate()) + '/' + pad(vn.getUTCMonth() + 1) + '/' + vn.getUTCFullYear()
+      + ' ' + pad(vn.getUTCHours()) + ':' + pad(vn.getUTCMinutes()) + ':' + pad(vn.getUTCSeconds());
+  }
+
+  window.triggerPrediction = function() {
+    var nameEl = document.getElementById('input-student-name');
+    var idEl   = document.getElementById('input-student-id');
+    var name = nameEl ? nameEl.value.trim() : '';
+    var id   = idEl   ? idEl.value.trim()   : '';
+    if (!name || !id) { alert('Vui lòng nhập Họ tên và Mã SV!'); return; }
+
+    if (!validateInputs()) return;
+
+    resolveImprovements();
+    sepalCalc(); 
+
+    var semGPAs = getSemGPAs();
+    var btn = document.getElementById('btn-predict');
+    var oldTxt = btn.innerHTML;
+    btn.innerHTML = 'AI đang tính... <i class="fa-solid fa-spinner fa-spin"></i>';
+    btn.disabled = true;
+
+    var payload = JSON.stringify({ gpa1: semGPAs[0]||0, gpa2: semGPAs[1]||0, gpa3: semGPAs[2]||0 });
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', 'https://manh69-sepal-api.hf.space/predict', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onload = function() {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try {
+          var data = JSON.parse(xhr.responseText);
+          var gpa4     = data.predicted_gpa4 || data.predicted_gpa || 0; 
+          var gpaAccum = parseFloat(document.getElementById('global-gpa').innerText) || 0;
+          var totalTC  = parseInt(document.getElementById('total-credits').innerText) || 0;
+          var fSubs    = getFSubjects();
+          var gpa3     = semGPAs[2] || 0;
+          var result   = analyzeWarning(gpaAccum, totalTC, fSubs, semGPAs, gpa4);
+
+          document.getElementById('res-name').innerText      = name.toUpperCase();
+          document.getElementById('res-id').innerText        = id;
+          document.getElementById('res-gpa3').innerText      = gpa3.toFixed(2);
+          document.getElementById('res-gpa-accum').innerText = gpaAccum.toFixed(2);
+          document.getElementById('res-total-tc').innerText  = totalTC;
+          document.getElementById('res-f-count').innerText   = fSubs.length;
+          document.getElementById('res-gpa-4').innerText     = gpa4.toFixed(2);
+          document.getElementById('res-warning-label').innerText = result.label;
+
+          var pct = Math.min((gpa4 / 4.0) * 100, 100);
+          document.getElementById('res-progress-bar').style.width = pct + '%';
+          document.getElementById('dashboard-grid').className = 'dashboard-grid ' + result.theme;
+          document.getElementById('rec-header-text').innerText = result.header;
+          document.getElementById('rec-intro-text').innerHTML  = result.intro;
+
+          var ul = document.getElementById('rec-list');
+          ul.innerHTML = '';
+          result.recs.forEach(function(r) {
+            var li = document.createElement('li');
+            li.innerHTML = '<i class="fa-solid ' + r.icon + ' rec-icon"></i><span>' + r.text + '</span>';
+            ul.appendChild(li);
+          });
+
+          // --- GOM TẤT CẢ DỮ LIỆU ĐỂ GỬI 1 LẦN ---
+          var semDetails = ["", "", ""];
+          for (var i = 1; i <= 3; i++) {
+              document.querySelectorAll('#tbody-sem-' + i + ' tr').forEach(function(row) {
+                  var n = row.querySelector('.subj-name').value;
+                  if(n) semDetails[i-1] += n + "(" + row.querySelector('.val-credit').value + "TC-" + row.querySelector('.val-gpa').value + "đ) | ";
+              });
+              if(semDetails[i-1] === "") semDetails[i-1] = "Trống";
+          }
+
+          var recSummary = result.recs.map(function(r) { return r.text.replace(/<[^>]*>?/gm, ''); }).join("; ");
+
+          var fullData = { 
+              timestamp: getVNTimestamp(),
+              name: name.toUpperCase(), 
+              student_id: id,
+              sem1: semDetails[0], gpa1: (semGPAs[0] || 0).toFixed(2),
+              sem2: semDetails[1], gpa2: (semGPAs[1] || 0).toFixed(2),
+              sem3: semDetails[2], gpa3: (semGPAs[2] || 0).toFixed(2),
+              totalTC: totalTC,
+              gpaAccum: gpaAccum.toFixed(2),
+              fCount: fSubs.length,
+              predicted: gpa4.toFixed(2), 
+              warning: result.label,
+              recommendation: recSummary
+          };
+          
+          fetch(SHEET_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(fullData) }).catch(function(err){});
+
+          document.getElementById('sepal-page-2').style.display = 'none';
+          document.getElementById('sepal-page-3').style.display = 'block';
+          window.scrollTo(0, 0);
+          document.title = "SEPAL - Kết quả: " + name.toUpperCase();
+
+        } catch(e) {
+          alert('Lỗi xử lý dữ liệu: ' + e.message);
+        }
+      } else {
+        alert('Lỗi máy chủ AI: HTTP ' + xhr.status);
+      }
+      btn.innerHTML = oldTxt;
+      btn.disabled = false;
+    };
+    xhr.onerror = function() {
+      alert('Không kết nối được máy chủ AI. Vui lòng thử lại!');
+      btn.innerHTML = oldTxt;
+      btn.disabled = false;
+    };
+    xhr.send(payload);
+  };
+
+  window.goBackToPage2 = function() {
+    document.getElementById('sepal-page-3').style.display = 'none';
+    document.getElementById('sepal-page-2').style.display = 'block';
+    window.scrollTo(0, 0);
+    document.title = "SEPAL - Nhập dữ liệu học tập";
+  };
+
+  sepalInit(); 
+})();
+</script>
