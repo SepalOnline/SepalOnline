@@ -25,7 +25,9 @@
             <p class="sepal-desc">Hệ thống hỗ trợ dự báo sớm kết quả học tập<br>và đưa ra khuyến nghị cá nhân hóa</p>
         </div>
 
-        <form action="/wp-login.php?gate=student" method="post" class="sepal-form-box">
+        <form onsubmit="handleStaticLogin(event, 'student')" class="sepal-form-box">
+            <div id="error-student" class="sepal-alert-error" style="display:none;"></div>
+
             <label class="sepal-label">Tên đăng nhập</label>
             <div class="sepal-input-container">
                 <i class="fa-regular fa-user sepal-icon-left"></i>
@@ -68,7 +70,9 @@
             <p style="font-size:14px; color:#64748b; font-family:'Inter',sans-serif;">Vui lòng đăng nhập tài khoản Giảng viên</p>
         </div>
 
-        <form action="/wp-login.php?gate=teacher" method="post" style="font-family:'Inter',sans-serif;">
+        <form onsubmit="handleStaticLogin(event, 'teacher')" style="font-family:'Inter',sans-serif;">
+            <div id="error-teacher" class="sepal-alert-error" style="display:none;"></div>
+
             <label class="sepal-label">Tài khoản Cố vấn</label>
             <div class="sepal-input-container" style="margin-bottom:15px;">
                 <i class="fa-regular fa-user sepal-icon-left"></i>
@@ -87,19 +91,22 @@
 </div>
 
 <style>
-    /* HEADER */
-    .sepal-fullwidth-header {
-        width: 100vw;
-        position: relative;
-        left: 50%;
-        transform: translateX(-50%); 
-        background-color: #ffffff;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        z-index: 100;
-        /* Đã kéo thanh này xuống 20px để thấy được toàn bộ */
-        margin-top: 20px; 
+    /* CSS THÔNG BÁO LỖI NGẦM */
+    .sepal-alert-error {
+        background-color: #fef2f2;
+        color: #dc2626;
+        border: 1px solid #f87171;
+        padding: 12px 15px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        line-height: 1.5;
+        font-family: 'Inter', sans-serif;
     }
 
+    /* HEADER */
+    .sepal-fullwidth-header { width: 100vw; position: relative; left: 50%; transform: translateX(-50%); background-color: #ffffff; box-shadow: 0 4px 20px rgba(0,0,0,0.08); z-index: 100; margin-top: 20px; }
     .sepal-nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0px 20px; }
     .sepal-nav-left { display: flex; align-items: center; gap: 15px; }
     .sepal-logo-img { height: 50px; width: auto; object-fit: contain; }
@@ -160,6 +167,7 @@
 </style>
 
 <script>
+    // Hàm ẩn/hiện mật khẩu
     function togglePassword(inputId, icon) {
         const passField = document.getElementById(inputId);
         if (passField.type === 'password') {
@@ -171,6 +179,7 @@
         }
     }
 
+    // Modal Cố Vấn
     function openTeacherModal() { 
         document.getElementById('teacher-modal').style.display = 'flex'; 
     }
@@ -181,8 +190,58 @@
 
     window.onclick = function(event) {
         const modal = document.getElementById('teacher-modal');
-        if (event.target == modal) {
-            closeTeacherModal();
-        }
+        if (event.target == modal) closeTeacherModal();
+    }
+
+    // ==========================================
+    // LOGIC ĐĂNG NHẬP CỤC BỘ BẰNG JAVASCRIPT
+    // ==========================================
+    function handleStaticLogin(event, role) {
+        event.preventDefault(); // Chặn hành vi chuyển trang mặc định của Form
+
+        const form = event.target;
+        const btn = form.querySelector('.sepal-submit-btn');
+        const errorBox = document.getElementById('error-' + role);
+        const originalBtnText = btn.innerHTML;
+
+        // Lấy giá trị tài khoản và mật khẩu người dùng vừa nhập
+        const username = form.elements['log'].value.trim();
+        const password = form.elements['pwd'].value;
+
+        // Trạng thái đang tải (để tạo cảm giác giống hệ thống thật)
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
+        btn.disabled = true;
+        errorBox.style.display = 'none';
+
+        // Giả lập thời gian chờ của mạng (800ms) trước khi xử lý
+        setTimeout(() => {
+            if (role === 'student') {
+                // Kiểm tra tài khoản sinh viên
+                if (username === 'sinhvien' && password === '1234') {
+                    // Nếu đúng -> Chuyển hướng sang file sinhvien.html
+                    window.location.href = 'sinhvien.html';
+                } else {
+                    // Nếu sai -> Báo lỗi
+                    showLoginError(errorBox, btn, originalBtnText, 'Tên đăng nhập hoặc mật khẩu sinh viên không chính xác.');
+                }
+            } else if (role === 'teacher') {
+                // Kiểm tra tài khoản giảng viên
+                if (username === 'giangvien' && password === '1234') {
+                    // Nếu đúng -> Chuyển hướng sang file giangvien.html
+                    window.location.href = 'giangvien.html';
+                } else {
+                    // Nếu sai -> Báo lỗi
+                    showLoginError(errorBox, btn, originalBtnText, 'Tài khoản hoặc mật khẩu Cố vấn không chính xác.');
+                }
+            }
+        }, 800);
+    }
+
+    // Hàm phụ hiển thị thông báo lỗi
+    function showLoginError(errorBox, btn, originalBtnText, message) {
+        errorBox.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> ' + message;
+        errorBox.style.display = 'block';
+        btn.innerHTML = originalBtnText;
+        btn.disabled = false;
     }
 </script>
